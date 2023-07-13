@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { store } from "./app/store";
+import { store } from "./app/store.ts";
 import { Provider } from "react-redux";
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 

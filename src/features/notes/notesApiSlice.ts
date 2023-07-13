@@ -5,7 +5,7 @@ import {
   createEntityAdapter,
   EntityState,
 } from "@reduxjs/toolkit";
-import { apiSlice } from "../../App/api/apiSlice";
+import { apiSlice } from "../../app/api/apiSlice";
 import { RootState } from "../../app/store";
 
 type Note = {

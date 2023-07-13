@@ -1,12 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials } from "../../features/auth/authSlice";
+import { RootState } from "../store";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "https://technotes-api.onrender.com",
   credentials: "include",
-  prepareHeaders: (headers, { getState }) => {
-    const token = getState().auth.token;
-
+  prepareHeaders: (headers: Headers, { getState }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
     }
