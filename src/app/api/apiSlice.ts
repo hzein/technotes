@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { BaseQueryFn } from "@reduxjs/toolkit/query";
 import { setCredentials } from "../../features/auth/authSlice";
 import { RootState } from "../store";
 
-const baseQuery = fetchBaseQuery({
+const baseQuery: BaseQueryFn = fetchBaseQuery({
   baseUrl: "https://technotes-api.onrender.com",
   credentials: "include",
   prepareHeaders: (headers: Headers, { getState }) => {
@@ -15,7 +17,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth = async (args, api, extraOptions) => {
+const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
   // console.log(args) // request url, method, body
   // console.log(api) // signal, dispatch, getState()
   // console.log(extraOptions) //custom like {shout: true}
