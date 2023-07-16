@@ -17,7 +17,7 @@ const PersistLogin = () => {
     useRefreshMutation();
 
   useEffect(() => {
-    if (effectRan.current === true || process.env.NODE_ENV !== "development") {
+    if (effectRan.current === true || import.meta.env.MODE !== "development") {
       // React 18 Strict Mode
 
       const verifyRefreshToken = async () => {
@@ -65,7 +65,7 @@ const PersistLogin = () => {
   } else if (token && isUninitialized) {
     //persist: yes, token: yes
     console.log("token and uninit");
-    console.log(isUninitialized);
+    //console.log(isUninitialized);
     content = <Outlet />;
   }
 

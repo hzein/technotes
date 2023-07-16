@@ -7,7 +7,7 @@ import { store } from "./app/store.ts";
 import { Provider } from "react-redux";
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 
-if (process.env.NODE_ENV === "production") disableReactDevTools();
+if (import.meta.env.MODE === "production") disableReactDevTools();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
