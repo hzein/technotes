@@ -3,22 +3,21 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn } from "@reduxjs/toolkit/query";
 import { setCredentials } from "../../features/auth/authSlice";
 import { RootState } from "../store";
-import { QueryReturnValue } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 
 const url = import.meta.env.VITE_BASE_URL;
 
-interface ResultType {
-  data?: object[];
-  error?: {
-    data?: {
-      message?: string;
-    };
-    status?: number;
-    [key: string]: unknown;
-  };
-}
+// interface ResultType {
+//   data?: object[];
+//   error?: {
+//     data?: {
+//       message?: string;
+//     };
+//     status?: number;
+//     [key: string]: unknown;
+//   };
+// }
 
-const baseQuery: BaseQueryFn = fetchBaseQuery({
+const baseQuery = fetchBaseQuery({
   baseUrl: url,
   credentials: "include",
   prepareHeaders: (headers: Headers, { getState }) => {
@@ -36,11 +35,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
   // console.log(api) // signal, dispatch, getState()
   // console.log(extraOptions) //custom like {shout: true}
 
-  let result: QueryReturnValue<unknown, unknown, ResultType> = await baseQuery(
-    args,
-    api,
-    extraOptions
-  );
+  let result = await baseQuery(args, api, extraOptions);
 
   console.log("RESULT: ", result);
 
@@ -59,7 +54,7 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
       result = await baseQuery(args, api, extraOptions);
     } else {
       if (refreshResult?.error?.status === 403) {
-        refreshResult.error.data.message = "Your login has expired. ";
+        refreshResult.error.data = "Your login has expired. ";
       }
       return refreshResult;
     }
@@ -71,5 +66,5 @@ const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Note", "User"],
-  endpoints: (builder) => ({}),
+  endpoints: (_builder) => ({}),
 });
