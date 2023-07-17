@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   createSelector,
@@ -22,7 +23,7 @@ const initialState = usersAdapter.getInitialState();
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<User[], void>({
+    getUsers: builder.query<EntityState<User>, void>({
       query: () => ({
         url: "/users",
         validateStatus: (response: Response, result: any) => {
@@ -36,11 +37,11 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         });
         return usersAdapter.setAll(initialState, loadedUsers);
       },
-      providesTags: (result, _error, _arg) => {
+      providesTags: (result) => {
         if (result?.ids) {
           return [
             { type: "User", id: "LIST" },
-            ...result.ids.map((id) => ({ type: "User", id })),
+            ...result.ids.map((id) => ({ type: "User" as const, id })),
           ];
         } else return [{ type: "User", id: "LIST" }];
       },
@@ -101,5 +102,5 @@ export const {
   selectIds: selectUserIds,
   //pass in a selector that returns the users slice of state
 } = usersAdapter.getSelectors<RootState>(
-  (state) => selectUsersData(state) ?? initialState
+  (state: RootState) => selectUsersData(state) ?? initialState
 );

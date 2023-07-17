@@ -25,7 +25,7 @@ const initialState = notesAdapter.getInitialState();
 
 export const notesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getNotes: builder.query<Note[], void>({
+    getNotes: builder.query<EntityState<Note>, void>({
       query: () => ({
         url: "/notes",
         validateStatus: (response: Response, result: any) => {
@@ -39,11 +39,11 @@ export const notesApiSlice = apiSlice.injectEndpoints({
         });
         return notesAdapter.setAll(initialState, loadedNotes);
       },
-      providesTags: (result, _error, _arg) => {
+      providesTags: (result) => {
         if (result?.ids) {
           return [
             { type: "Note", id: "LIST" },
-            ...result.ids.map((id) => ({ type: "Note", id })),
+            ...result.ids.map((id) => ({ type: "Note" as const, id })),
           ];
         } else return [{ type: "Note", id: "LIST" }];
       },
@@ -104,5 +104,5 @@ export const {
   selectIds: selectNoteIds,
   //pass in a selector that returns the notes slice of state
 } = notesAdapter.getSelectors<RootState>(
-  (state) => selectNotesData(state) ?? initialState
+  (state: RootState) => selectNotesData(state) ?? initialState
 );
