@@ -3,9 +3,16 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useGetUsersQuery } from "./usersApiSlice";
 import { memo } from "react";
+import { EntityId } from "@reduxjs/toolkit";
 
-const User = ({ userId }) => {
-  const { user } = useGetUsersQuery("usersList", {
+type userIdProp = {
+  userId: EntityId;
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+const User = (props: userIdProp) => {
+  const userId = props.userId;
+  const { user } = useGetUsersQuery(undefined, {
     selectFromResult: ({ data }) => ({
       user: data?.entities[userId],
     }),

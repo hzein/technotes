@@ -8,10 +8,9 @@ import {
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-
 import { useSendLogoutMutation } from "../features/auth/authApiSlice";
-
 import useAuth from "../hooks/useAuth";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../app/helpers";
 
 const DASH_REGEX = /^\/dash(\/)?$/;
 const NOTES_REGEX = /^\/dash\/notes(\/)?$/;
@@ -96,7 +95,18 @@ const DashHeader = () => {
     </button>
   );
 
-  const errClass = isError ? "errmsg" : "offscreen";
+  let errorContent;
+  let errClass;
+  if (isFetchBaseQueryError(error)) {
+    // you can access all properties of `FetchBaseQueryError` here
+    const errMsg = "error" in error ? error.error : JSON.stringify(error.data);
+    errorContent = errMsg;
+    errClass = isError ? "errmsg" : "offscreen";
+  } else if (isErrorWithMessage(error)) {
+    // you can access all properties of `SerializedError` here
+    errorContent = error.message;
+    errClass = isError ? "errmsg" : "offscreen";
+  }
 
   let buttonContent;
   if (isLoading) {
@@ -115,7 +125,7 @@ const DashHeader = () => {
 
   const content = (
     <>
-      <p className={errClass}>{error?.data?.message}</p>
+      <p className={errClass}>{errorContent}</p>
 
       <header className="dash-header">
         <div className={`dash-header__container ${dashClass}`}>

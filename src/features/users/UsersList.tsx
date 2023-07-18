@@ -1,15 +1,15 @@
 import { useGetUsersQuery } from "./usersApiSlice";
 import User from "./User";
 import PulseLoader from "react-spinners/PulseLoader";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../../app/helpers";
 
 const UsersList = () => {
   const {
     data: users,
     isLoading,
     isSuccess,
-    isError,
     error,
-  } = useGetUsersQuery("usersList", {
+  } = useGetUsersQuery(undefined, {
     pollingInterval: 60000,
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
@@ -19,8 +19,13 @@ const UsersList = () => {
 
   if (isLoading) content = <PulseLoader color={"#FFF"} />;
 
-  if (isError) {
-    content = <p className="errmsg">{error?.data?.message}</p>;
+  if (isFetchBaseQueryError(error)) {
+    // you can access all properties of `FetchBaseQueryError` here
+    const errMsg = "error" in error ? error.error : JSON.stringify(error.data);
+    content = <p className="errmsg">{errMsg}</p>;
+  } else if (isErrorWithMessage(error)) {
+    // you can access all properties of `SerializedError` here
+    content = <p className="errmsg">{error.message}</p>;
   }
 
   if (isSuccess) {
