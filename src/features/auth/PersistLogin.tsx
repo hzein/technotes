@@ -5,6 +5,7 @@ import usePersist from "../../hooks/usePersist";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "./authSlice";
 import PulseLoader from "react-spinners/PulseLoader";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../../app/helpers";
 
 const PersistLogin = () => {
   const [persist] = usePersist();
@@ -24,7 +25,7 @@ const PersistLogin = () => {
         console.log("verifying refresh token");
         try {
           //const response =
-          await refresh();
+          await refresh(effectRan.current);
           //const { accessToken } = response.data
           setTrueSuccess(true);
         } catch (err) {
@@ -35,7 +36,9 @@ const PersistLogin = () => {
       if (!token && persist) verifyRefreshToken();
     }
 
-    return () => (effectRan.current = true);
+    return () => {
+      effectRan.current = true;
+    };
 
     // eslint-disable-next-line
   }, []);
@@ -52,9 +55,17 @@ const PersistLogin = () => {
   } else if (isError) {
     //persist: yes, token: no
     console.log("error");
+    let errMsg;
+    if (isFetchBaseQueryError(error)) {
+      // you can access all properties of `FetchBaseQueryError` here
+      errMsg = "error" in error ? error.error : JSON.stringify(error.data);
+    } else if (isErrorWithMessage(error)) {
+      // you can access all properties of `SerializedError` here
+      errMsg = error.message;
+    }
     content = (
       <p className="errmsg">
-        {`${error?.data?.message} - `}
+        {`${errMsg} - `}
         <Link to="/login">Please login again</Link>.
       </p>
     );
