@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const usePersist = () => {
   const persistJson = localStorage.getItem("persist");
-  const [persist, setPersist] = useState(
+  const [persist, setPersist] = useState<boolean>(
     persistJson !== null ? JSON.parse(persistJson) : false
   );
 
@@ -10,6 +10,6 @@ const usePersist = () => {
     localStorage.setItem("persist", JSON.stringify(persist));
   }, [persist]);
 
-  return [persist, setPersist];
+  return [persist, setPersist] as const;
 };
 export default usePersist;
