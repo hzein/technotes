@@ -6,17 +6,6 @@ import { RootState } from "../store";
 
 const url = import.meta.env.VITE_BASE_URL;
 
-// interface ResultType {
-//   data?: object[];
-//   error?: {
-//     data?: {
-//       message?: string;
-//     };
-//     status?: number;
-//     [key: string]: unknown;
-//   };
-// }
-
 const baseQuery = fetchBaseQuery({
   baseUrl: url,
   credentials: "include",

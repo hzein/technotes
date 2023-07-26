@@ -7,15 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 import { RootState } from "../../app/store";
-
-type User = {
-  _id: string;
-  id: string;
-  username: string;
-  password: string;
-  roles: string[];
-  active: boolean;
-};
+import { User } from "../../config/types";
 
 const usersAdapter = createEntityAdapter<User>({});
 

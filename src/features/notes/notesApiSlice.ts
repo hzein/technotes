@@ -7,18 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 import { RootState } from "../../app/store";
-
-type Note = {
-  _id: string;
-  id: string;
-  user: string;
-  username: string;
-  title: string;
-  text: string;
-  completed: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { Note } from "../../config/types";
 
 const notesAdapter = createEntityAdapter<Note>({
   sortComparer: (a, b) =>

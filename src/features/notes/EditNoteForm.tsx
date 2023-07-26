@@ -4,8 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import useAuth from "../../hooks/useAuth";
+import { Note, User } from "../../config/types";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../../app/helpers";
 
-const EditNoteForm = ({ note, users }) => {
+interface PropsType {
+  note: Note;
+  users: User[];
+}
+
+const EditNoteForm = ({ note, users }: PropsType) => {
   const { isManager, isAdmin } = useAuth();
 
   const [updateNote, { isLoading, isSuccess, isError, error }] =
@@ -32,16 +39,30 @@ const EditNoteForm = ({ note, users }) => {
     }
   }, [isSuccess, isDelSuccess, navigate]);
 
-  const onTitleChanged = (e) => setTitle(e.target.value);
-  const onTextChanged = (e) => setText(e.target.value);
-  const onCompletedChanged = (e) => setCompleted((prev) => !prev);
-  const onUserIdChanged = (e) => setUserId(e.target.value);
+  const onTitleChanged = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTitle(e.target.value);
+  const onTextChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    setText(e.target.value);
+  const onCompletedChanged = () => setCompleted((prev) => !prev);
+  const onUserIdChanged = (e: React.ChangeEvent<HTMLSelectElement>) =>
+    setUserId(e.target.value);
 
   const canSave = [title, text, userId].every(Boolean) && !isLoading;
 
-  const onSaveNoteClicked = async (e) => {
+  const currentUpdate = new Date(Date.now());
+
+  const onSaveNoteClicked = async () => {
     if (canSave) {
-      await updateNote({ id: note.id, user: userId, title, text, completed });
+      await updateNote({
+        id: note.id,
+        user: userId,
+        title,
+        text,
+        completed,
+        noteId: note.noteId,
+        createdAt: note.createdAt,
+        updatedAt: currentUpdate,
+      });
     }
   };
 
@@ -79,7 +100,28 @@ const EditNoteForm = ({ note, users }) => {
   const validTitleClass = !title ? "form__input--incomplete" : "";
   const validTextClass = !text ? "form__input--incomplete" : "";
 
-  const errContent = (error?.data?.message || delerror?.data?.message) ?? "";
+  let errContent = "";
+
+  if (isError) {
+    if (isFetchBaseQueryError(error)) {
+      // you can access all properties of `FetchBaseQueryError` here
+      errContent = "error" in error ? error.error : JSON.stringify(error.data);
+    } else if (isErrorWithMessage(error)) {
+      // you can access all properties of `SerializedError` here
+      errContent = error.message;
+    }
+  }
+
+  if (isDelError) {
+    if (isFetchBaseQueryError(delerror)) {
+      // you can access all properties of `FetchBaseQueryError` here
+      errContent =
+        "error" in delerror ? delerror.error : JSON.stringify(delerror.data);
+    } else if (isErrorWithMessage(delerror)) {
+      // you can access all properties of `SerializedError` here
+      errContent = delerror.message;
+    }
+  }
 
   let deleteButton = null;
   if (isManager || isAdmin) {
@@ -100,7 +142,7 @@ const EditNoteForm = ({ note, users }) => {
 
       <form className="form" onSubmit={(e) => e.preventDefault()}>
         <div className="form__title-row">
-          <h2>Edit Note #{note.ticket}</h2>
+          <h2>Edit Note #{note.noteId}</h2>
           <div className="form__action-buttons">
             <button
               className="icon-button"

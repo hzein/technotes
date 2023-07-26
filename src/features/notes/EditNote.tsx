@@ -5,21 +5,22 @@ import { useGetUsersQuery } from "../users/usersApiSlice";
 import useAuth from "../../hooks/useAuth";
 import PulseLoader from "react-spinners/PulseLoader";
 import useTitle from "../../hooks/useTitle";
+import { IdParams } from "../../config/types";
 
-const EditNote = () => {
+function EditNote() {
   useTitle("techNotes: Edit Note");
 
-  const { id } = useParams();
+  const { id } = useParams<IdParams>();
 
   const { username, isManager, isAdmin } = useAuth();
 
-  const { note } = useGetNotesQuery("notesList", {
+  const { note } = useGetNotesQuery(undefined, {
     selectFromResult: ({ data }) => ({
-      note: data?.entities[id],
+      note: data?.entities[Number(id)],
     }),
   });
 
-  const { users } = useGetUsersQuery("usersList", {
+  const { users } = useGetUsersQuery(undefined, {
     selectFromResult: ({ data }) => ({
       users: data?.ids.map((id) => data?.entities[id]),
     }),
@@ -36,5 +37,5 @@ const EditNote = () => {
   const content = <EditNoteForm note={note} users={users} />;
 
   return content;
-};
+}
 export default EditNote;
