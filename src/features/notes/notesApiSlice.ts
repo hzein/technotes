@@ -11,10 +11,13 @@ import { RootState } from "../../app/store";
 type Note = {
   _id: string;
   id: string;
-  note: string;
+  user: string;
+  username: string;
   title: string;
   text: string;
   completed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 const notesAdapter = createEntityAdapter<Note>({

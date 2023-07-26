@@ -1,11 +1,18 @@
+/* eslint-disable react-refresh/only-export-components */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useGetNotesQuery } from "./notesApiSlice";
 import { memo } from "react";
+import { EntityId } from "@reduxjs/toolkit";
 
-const Note = ({ noteId }) => {
-  const { note } = useGetNotesQuery("notesList", {
+type noteIdProp = {
+  noteId: EntityId;
+};
+
+const Note = (props: noteIdProp) => {
+  const noteId = props.noteId;
+  const { note } = useGetNotesQuery(undefined, {
     selectFromResult: ({ data }) => ({
       note: data?.entities[noteId],
     }),

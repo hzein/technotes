@@ -2,6 +2,7 @@ import { useGetNotesQuery } from "./notesApiSlice";
 import Note from "./Note";
 import useAuth from "../../hooks/useAuth";
 import PulseLoader from "react-spinners/PulseLoader";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../../app/helpers";
 
 const NotesList = () => {
   const { username, isManager, isAdmin } = useAuth();
@@ -10,9 +11,8 @@ const NotesList = () => {
     data: notes,
     isLoading,
     isSuccess,
-    isError,
     error,
-  } = useGetNotesQuery("notesList", {
+  } = useGetNotesQuery(undefined, {
     pollingInterval: 15000,
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
@@ -22,8 +22,13 @@ const NotesList = () => {
 
   if (isLoading) content = <PulseLoader color={"#FFF"} />;
 
-  if (isError) {
-    content = <p className="errmsg">{error?.data?.message}</p>;
+  if (isFetchBaseQueryError(error)) {
+    // you can access all properties of `FetchBaseQueryError` here
+    const errMsg = "error" in error ? error.error : JSON.stringify(error.data);
+    content = <p className="errmsg">{errMsg}</p>;
+  } else if (isErrorWithMessage(error)) {
+    // you can access all properties of `SerializedError` here
+    content = <p className="errmsg">{error.message}</p>;
   }
 
   if (isSuccess) {
@@ -34,7 +39,7 @@ const NotesList = () => {
       filteredIds = [...ids];
     } else {
       filteredIds = ids.filter(
-        (noteId) => entities[noteId].username === username
+        (noteId) => entities[noteId]?.username === username
       );
     }
 
