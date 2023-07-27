@@ -3,8 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useAddNewNoteMutation } from "./notesApiSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
+import { User } from "../../config/types";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../../app/helpers";
 
-const NewNoteForm = ({ users }) => {
+interface PropsType {
+  users: User[];
+}
+
+const NewNoteForm = ({ users }: PropsType) => {
   const [addNewNote, { isLoading, isSuccess, isError, error }] =
     useAddNewNoteMutation();
 
@@ -23,13 +29,16 @@ const NewNoteForm = ({ users }) => {
     }
   }, [isSuccess, navigate]);
 
-  const onTitleChanged = (e) => setTitle(e.target.value);
-  const onTextChanged = (e) => setText(e.target.value);
-  const onUserIdChanged = (e) => setUserId(e.target.value);
+  const onTitleChanged = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTitle(e.target.value);
+  const onTextChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    setText(e.target.value);
+  const onUserIdChanged = (e: React.ChangeEvent<HTMLSelectElement>) =>
+    setUserId(e.target.value);
 
   const canSave = [title, text, userId].every(Boolean) && !isLoading;
 
-  const onSaveNoteClicked = async (e) => {
+  const onSaveNoteClicked = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (canSave) {
       await addNewNote({ user: userId, title, text });
@@ -49,9 +58,21 @@ const NewNoteForm = ({ users }) => {
   const validTitleClass = !title ? "form__input--incomplete" : "";
   const validTextClass = !text ? "form__input--incomplete" : "";
 
+  let errContent;
+
+  if (isError) {
+    if (isFetchBaseQueryError(error)) {
+      // you can access all properties of `FetchBaseQueryError` here
+      errContent = "error" in error ? error.error : JSON.stringify(error.data);
+    } else if (isErrorWithMessage(error)) {
+      // you can access all properties of `SerializedError` here
+      errContent = error.message;
+    }
+  }
+
   const content = (
     <>
-      <p className={errClass}>{error?.data?.message}</p>
+      <p className={errClass}>{errContent}</p>
 
       <form className="form" onSubmit={onSaveNoteClicked}>
         <div className="form__title-row">

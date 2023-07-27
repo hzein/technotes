@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { ROLES } from "../../config/roles";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../../app/helpers";
 
 const USER_REGEX = /^[A-z]{3,20}$/;
 const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/;
@@ -38,10 +39,12 @@ const NewUserForm = () => {
     }
   }, [isSuccess, navigate]);
 
-  const onUsernameChanged = (e) => setUsername(e.target.value);
-  const onPasswordChanged = (e) => setPassword(e.target.value);
+  const onUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setUsername(e.target.value);
+  const onPasswordChanged = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
 
-  const onRolesChanged = (e) => {
+  const onRolesChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const values = Array.from(
       e.target.selectedOptions, //HTMLCollection
       (option) => option.value
@@ -52,7 +55,7 @@ const NewUserForm = () => {
   const canSave =
     [roles.length, validUsername, validPassword].every(Boolean) && !isLoading;
 
-  const onSaveUserClicked = async (e) => {
+  const onSaveUserClicked = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (canSave) {
       await addNewUser({ username, password, roles });
@@ -71,13 +74,23 @@ const NewUserForm = () => {
   const errClass = isError ? "errmsg" : "offscreen";
   const validUserClass = !validUsername ? "form__input--incomplete" : "";
   const validPwdClass = !validPassword ? "form__input--incomplete" : "";
-  const validRolesClass = !Boolean(roles.length)
-    ? "form__input--incomplete"
-    : "";
+  const validRolesClass = !roles.length ? "form__input--incomplete" : "";
+
+  let errContent = "";
+
+  if (isError) {
+    if (isFetchBaseQueryError(error)) {
+      // you can access all properties of `FetchBaseQueryError` here
+      errContent = "error" in error ? error.error : JSON.stringify(error.data);
+    } else if (isErrorWithMessage(error)) {
+      // you can access all properties of `SerializedError` here
+      errContent = error.message;
+    }
+  }
 
   const content = (
     <>
-      <p className={errClass}>{error?.data?.message}</p>
+      <p className={errClass}>{errContent}</p>
 
       <form className="form" onSubmit={onSaveUserClicked}>
         <div className="form__title-row">

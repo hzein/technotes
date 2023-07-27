@@ -3,15 +3,16 @@ import EditUserForm from "./EditUserForm";
 import { useGetUsersQuery } from "./usersApiSlice";
 import PulseLoader from "react-spinners/PulseLoader";
 import useTitle from "../../hooks/useTitle";
+import { IdParams } from "../../config/types";
 
 const EditUser = () => {
   useTitle("techNotes: Edit User");
 
-  const { id } = useParams();
+  const { id } = useParams<IdParams>();
 
-  const { user } = useGetUsersQuery("usersList", {
+  const { user } = useGetUsersQuery(undefined, {
     selectFromResult: ({ data }) => ({
-      user: data?.entities[id],
+      user: data?.entities[Number(id)],
     }),
   });
 

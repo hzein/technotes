@@ -21,12 +21,12 @@ const Note = (props: noteIdProp) => {
   const navigate = useNavigate();
 
   if (note) {
-    const created = new Date(note.createdAt).toLocaleString("en-US", {
+    const created = new Date(note.createdAt as Date).toLocaleString("en-US", {
       day: "numeric",
       month: "long",
     });
 
-    const updated = new Date(note.updatedAt).toLocaleString("en-US", {
+    const updated = new Date(note.updatedAt as Date).toLocaleString("en-US", {
       day: "numeric",
       month: "long",
     });

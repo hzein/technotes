@@ -4,11 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { ROLES } from "../../config/roles";
+import { User } from "../../config/types";
+import { isFetchBaseQueryError, isErrorWithMessage } from "../../app/helpers";
+
+interface PropsType {
+  user: User;
+}
 
 const USER_REGEX = /^[A-z]{3,20}$/;
 const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/;
 
-const EditUserForm = ({ user }) => {
+const EditUserForm = ({ user }: PropsType) => {
   const [updateUser, { isLoading, isSuccess, isError, error }] =
     useUpdateUserMutation();
 
@@ -43,10 +49,12 @@ const EditUserForm = ({ user }) => {
     }
   }, [isSuccess, isDelSuccess, navigate]);
 
-  const onUsernameChanged = (e) => setUsername(e.target.value);
-  const onPasswordChanged = (e) => setPassword(e.target.value);
+  const onUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setUsername(e.target.value);
+  const onPasswordChanged = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
 
-  const onRolesChanged = (e) => {
+  const onRolesChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const values = Array.from(
       e.target.selectedOptions,
       (option) => option.value
@@ -56,7 +64,7 @@ const EditUserForm = ({ user }) => {
 
   const onActiveChanged = () => setActive((prev) => !prev);
 
-  const onSaveUserClicked = async (e) => {
+  const onSaveUserClicked = async () => {
     if (password) {
       await updateUser({ id: user.id, username, password, roles, active });
     } else {
@@ -89,11 +97,30 @@ const EditUserForm = ({ user }) => {
   const validUserClass = !validUsername ? "form__input--incomplete" : "";
   const validPwdClass =
     password && !validPassword ? "form__input--incomplete" : "";
-  const validRolesClass = !Boolean(roles.length)
-    ? "form__input--incomplete"
-    : "";
+  const validRolesClass = !roles.length ? "form__input--incomplete" : "";
 
-  const errContent = (error?.data?.message || delerror?.data?.message) ?? "";
+  let errContent = "";
+
+  if (isError) {
+    if (isFetchBaseQueryError(error)) {
+      // you can access all properties of `FetchBaseQueryError` here
+      errContent = "error" in error ? error.error : JSON.stringify(error.data);
+    } else if (isErrorWithMessage(error)) {
+      // you can access all properties of `SerializedError` here
+      errContent = error.message;
+    }
+  }
+
+  if (isDelError) {
+    if (isFetchBaseQueryError(delerror)) {
+      // you can access all properties of `FetchBaseQueryError` here
+      errContent =
+        "error" in delerror ? delerror.error : JSON.stringify(delerror.data);
+    } else if (isErrorWithMessage(delerror)) {
+      // you can access all properties of `SerializedError` here
+      errContent = delerror.message;
+    }
+  }
 
   const content = (
     <>
@@ -169,7 +196,7 @@ const EditUserForm = ({ user }) => {
           name="roles"
           className={`form__select ${validRolesClass}`}
           multiple={true}
-          size="3"
+          size={3}
           value={roles}
           onChange={onRolesChanged}
         >

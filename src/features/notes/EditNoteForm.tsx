@@ -49,8 +49,6 @@ const EditNoteForm = ({ note, users }: PropsType) => {
 
   const canSave = [title, text, userId].every(Boolean) && !isLoading;
 
-  const currentUpdate = new Date(Date.now());
-
   const onSaveNoteClicked = async () => {
     if (canSave) {
       await updateNote({
@@ -60,8 +58,6 @@ const EditNoteForm = ({ note, users }: PropsType) => {
         text,
         completed,
         noteId: note.noteId,
-        createdAt: note.createdAt,
-        updatedAt: currentUpdate,
       });
     }
   };
@@ -70,7 +66,7 @@ const EditNoteForm = ({ note, users }: PropsType) => {
     await deleteNote({ id: note.id });
   };
 
-  const created = new Date(note.createdAt).toLocaleString("en-US", {
+  const created = new Date(note.createdAt as Date).toLocaleString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -78,7 +74,7 @@ const EditNoteForm = ({ note, users }: PropsType) => {
     minute: "numeric",
     second: "numeric",
   });
-  const updated = new Date(note.updatedAt).toLocaleString("en-US", {
+  const updated = new Date(note.updatedAt as Date).toLocaleString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",

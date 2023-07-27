@@ -1,23 +1,23 @@
 export type User = {
-  _id: string;
-  id: string;
+  _id?: string;
+  id?: string;
   username: string;
-  password: string;
+  password?: string;
   roles: string[];
-  active: boolean;
+  active?: boolean;
 };
 
 export type Note = {
   _id?: string;
-  id: string;
+  id?: string;
   user: string;
   username?: string;
   title: string;
   text: string;
-  completed: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  noteId: number;
+  completed?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  noteId?: number;
 };
 
 export type RolesType = {

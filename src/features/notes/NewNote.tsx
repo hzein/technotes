@@ -6,7 +6,7 @@ import useTitle from "../../hooks/useTitle";
 const NewNote = () => {
   useTitle("techNotes: New Note");
 
-  const { users } = useGetUsersQuery("usersList", {
+  const { users } = useGetUsersQuery(undefined, {
     selectFromResult: ({ data }) => ({
       users: data?.ids.map((id) => data?.entities[id]),
     }),

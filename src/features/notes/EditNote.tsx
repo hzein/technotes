@@ -34,7 +34,7 @@ function EditNote() {
     }
   }
 
-  const content = <EditNoteForm note={note} users={users} />;
+  const content = <EditNoteForm note={note} users={users as []} />;
 
   return content;
 }
