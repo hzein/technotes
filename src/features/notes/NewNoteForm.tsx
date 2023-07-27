@@ -41,7 +41,7 @@ const NewNoteForm = ({ users }: PropsType) => {
   const onSaveNoteClicked = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (canSave) {
-      await addNewNote({ user: userId, title, text });
+      await addNewNote({ user: userId as string, title, text });
     }
   };
 
