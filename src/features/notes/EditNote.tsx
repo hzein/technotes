@@ -6,6 +6,7 @@ import useAuth from "../../hooks/useAuth";
 import PulseLoader from "react-spinners/PulseLoader";
 import useTitle from "../../hooks/useTitle";
 import { IdParams } from "../../config/types";
+import { EntityId } from "@reduxjs/toolkit";
 
 function EditNote() {
   useTitle("techNotes: Edit Note");
@@ -16,7 +17,7 @@ function EditNote() {
 
   const { note } = useGetNotesQuery(undefined, {
     selectFromResult: ({ data }) => ({
-      note: data?.entities[Number(id)],
+      note: data?.entities[id as EntityId],
     }),
   });
 
